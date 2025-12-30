@@ -4,3 +4,10 @@
 target/
 *.iml
 
+# Local application config (secrets)
+application.properties
+application-local.properties
+application-dev.properties
+
+# Environment variables
+.env
