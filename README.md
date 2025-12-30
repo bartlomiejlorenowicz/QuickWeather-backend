@@ -110,7 +110,7 @@ Short demo video presenting the main application features:
 - Swagger API documentation
 
 ![QuickWeather Demo](docs/swagger-quickweather.gif)
-![QuickWeather Demo](docs/quickweather-full.gif)
+![QuickWeather Demo](docs/quickweather-fullstack.gif)
 
 ## 👤 Author
 Bartłomiej Lorenowicz – Junior Java Developer
