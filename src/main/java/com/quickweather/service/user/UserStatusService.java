@@ -1,8 +1,8 @@
 //package com.quickweather.service.user;
 //
-//import com.quickweather.domain.Role;
+//import com.quickweather.domain.user.Role;
 //import com.quickweather.dto.user.UserId;
-//import com.quickweather.domain.User;
+//import com.quickweather.domain.user.User;
 //import com.quickweather.exceptions.UserErrorType;
 //import com.quickweather.exceptions.UserValidationException;
 //import com.quickweather.repository.UserRepository;
