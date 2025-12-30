@@ -3,6 +3,35 @@
 Backend application providing weather data, forecasts, air pollution information
 and user-specific search history, with focus on clean architecture, security and testability.
 
+⚡ Run the project in 3 minutes (Docker)
+
+The easiest way to run the project locally is using Docker Compose.
+No manual database or mail configuration is required.
+
+1️⃣ Clone the repository
+git clone https://github.com/bartlomiejlorenowicz/QuickWeather-backend
+cd QuickWeather
+
+2️⃣ Prepare environment variables
+
+Create a .env file based on the example:
+cp .env.example .env
+
+Fill in the required values in .env (API keys, JWT secrets).
+
+⚠️ Important:
+The .env file is not committed to the repository.
+It is required to run the application locally.
+
+3️⃣ Start the application
+docker-compose up -d
+
+This will start:
+
+PostgreSQL database
+MailHog (local email testing)
+Spring Boot backend application
+
 ## 🚀 Tech Stack
 - Java 21
 - Spring Boot 3
