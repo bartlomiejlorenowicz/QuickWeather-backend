@@ -9,8 +9,4 @@ public enum ApiSource {
     ApiSource(String displayName) {
         this.displayName = displayName;
     }
-
-    public String getDisplayName() {
-        return displayName;
-    }
 }

@@ -2,7 +2,7 @@ package com.quickweather.domain.weather;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.quickweather.domain.user.User;
-import com.quickweather.dto.WeatherApiResponse;
+import com.quickweather.dto.apiResponse.OperationType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,7 +32,7 @@ public class UserSearchHistory {
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "weather_api_response_id", referencedColumnName = "id", nullable = false)
-    private WeatherApiResponse weatherApiResponse;
+    private OperationType.WeatherApiResponse weatherApiResponse;
 
     @Column(name = "searched_at", nullable = false)
     private LocalDateTime searchedAt;
@@ -41,5 +41,4 @@ public class UserSearchHistory {
     protected void onCreate() {
         this.searchedAt = LocalDateTime.now();
     }
-
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quickweather.domain.weather.ApiSource;
-import com.quickweather.dto.WeatherApiResponse;
+import com.quickweather.dto.apiResponse.OperationType;
 import com.quickweather.dto.weatherDtos.weather.response.WeatherResponseData;
 import com.quickweather.exceptions.WeatherErrorType;
 import com.quickweather.exceptions.WeatherServiceException;
@@ -59,18 +59,16 @@ public abstract class WeatherServiceBase {
         }
     }
 
-    //pobiera dane z bazy jesli sa dostepne
-    public Optional<WeatherApiResponse> getCacheWeatherResponse(String city, ApiSource apiSource) {
+    public Optional<OperationType.WeatherApiResponse> getCacheWeatherResponse(String city, ApiSource apiSource) {
         return weatherApiResponseRepository.findTopByCityAndApiSourceOrderByCreatedAtDesc(city, apiSource);
     }
 
-    //zapisuje JSON do bazy
     public void saveWeatherResponse(WeatherResponseData data) throws JsonProcessingException {
 
         JsonNode validatedResponseJson = validateJson(data.getResponseJson(), "Response", data.getCity());
         JsonNode validatedRequestJson = validateJson(data.getRequestJson(), "Request", data.getCity());
 
-        WeatherApiResponse weatherApiResponse = new WeatherApiResponse();
+        OperationType.WeatherApiResponse weatherApiResponse = new OperationType.WeatherApiResponse();
         weatherApiResponse.setCity(data.getCity());
         weatherApiResponse.setCountryCode(data.getCountryCode());
         weatherApiResponse.setApiSource(data.getApiSource());
@@ -81,8 +79,6 @@ public abstract class WeatherServiceBase {
         weatherApiResponseRepository.save(weatherApiResponse);
     }
 
-//    ============ Helper Method ===============
-
     private JsonNode validateJson(String json, String type, String city) throws JsonProcessingException {
         if (json == null || json.isEmpty()) {
             log.error("Response JSON is null or empty for city: {}", type, city);
@@ -91,5 +87,4 @@ public abstract class WeatherServiceBase {
         }
         return objectMapper.readTree(json);
     }
-
 }
