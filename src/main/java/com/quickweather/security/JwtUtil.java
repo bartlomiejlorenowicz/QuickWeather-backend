@@ -1,7 +1,7 @@
 package com.quickweather.security;
 
 import com.quickweather.domain.user.User;
-import com.quickweather.service.user.CustomUserDetails;
+import com.quickweather.security.userdatails.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -23,6 +23,7 @@ public class JwtUtil {
     private final SecretKey accessTokenKey;
     private final SecretKey resetTokenKey;
     private final long expirationTime;
+    private static final long RESET_TOKEN_EXPIRATION_MILLIS = 15 * 60 * 1000;
 
     public JwtUtil(
             @Value("${jwt.secret}") String accessSecret,
@@ -71,7 +72,7 @@ public class JwtUtil {
                 .claim("userId", user.getId())
                 .claim("type", "reset-password")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 min ważności
+                .setExpiration(new Date(System.currentTimeMillis() + RESET_TOKEN_EXPIRATION_MILLIS))
                 .signWith(resetTokenKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -148,5 +149,4 @@ public class JwtUtil {
             throw e;
         }
     }
-
 }

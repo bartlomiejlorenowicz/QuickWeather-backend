@@ -3,11 +3,11 @@ package com.quickweather.service.openweathermap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quickweather.dto.apiResponse.OperationType;
 import com.quickweather.dto.weatherDtos.forecast.HourlyForecastResponseDto;
 import com.quickweather.dto.weatherDtos.weather.response.WeatherByZipCodeResponseDto;
 import com.quickweather.dto.weatherDtos.weather.response.WeatherResponse;
 import com.quickweather.domain.weather.ApiSource;
-import com.quickweather.dto.WeatherApiResponse;
 import com.quickweather.dto.weatherDtos.weather.response.WeatherResponseData;
 import com.quickweather.exceptions.WeatherErrorType;
 import com.quickweather.exceptions.WeatherServiceException;
@@ -65,7 +65,7 @@ class OpenWeatherServiceImplTest {
     @Test
     void testGetCacheWeatherResponseWithOpenWeatherServiceImpl() {
 
-        WeatherApiResponse mockResponse = new WeatherApiResponse();
+        OperationType.WeatherApiResponse mockResponse = new OperationType.WeatherApiResponse();
         mockResponse.setCity("London");
         mockResponse.setApiSource(ApiSource.OPEN_WEATHER);
         mockResponse.setCreatedAt(LocalDateTime.now());
@@ -73,7 +73,7 @@ class OpenWeatherServiceImplTest {
         when(weatherApiResponseRepository.findTopByCityAndApiSourceOrderByCreatedAtDesc("London", ApiSource.OPEN_WEATHER))
                 .thenReturn(Optional.of(mockResponse));
 
-        Optional<WeatherApiResponse> result = currentWeatherService.getCacheWeatherResponse("London", ApiSource.OPEN_WEATHER);
+        Optional<OperationType.WeatherApiResponse> result = currentWeatherService.getCacheWeatherResponse("London", ApiSource.OPEN_WEATHER);
 
         assertTrue(result.isPresent());
         assertEquals("London", result.get().getCity());
@@ -91,7 +91,7 @@ class OpenWeatherServiceImplTest {
         JsonNode responseJsonNode = objectMapper.readTree(responseJson);
         JsonNode requestJsonNode = objectMapper.readTree(requestJson);
 
-        WeatherApiResponse mockSavedResponse = new WeatherApiResponse();
+        OperationType.WeatherApiResponse mockSavedResponse = new OperationType.WeatherApiResponse();
         mockSavedResponse.setCity(city);
         mockSavedResponse.setCountryCode(countryCode);
         mockSavedResponse.setApiSource(ApiSource.OPEN_WEATHER);
@@ -99,14 +99,14 @@ class OpenWeatherServiceImplTest {
         mockSavedResponse.setRequestJson(requestJsonNode);
         mockSavedResponse.setCreatedAt(LocalDateTime.now());
 
-        Mockito.when(weatherApiResponseRepository.save(any(WeatherApiResponse.class))).thenReturn(mockSavedResponse);
+        Mockito.when(weatherApiResponseRepository.save(any(OperationType.WeatherApiResponse.class))).thenReturn(mockSavedResponse);
 
         WeatherResponseData data = new WeatherResponseData(city, countryCode, ApiSource.OPEN_WEATHER, responseJson, requestJson);
         currentWeatherService.saveWeatherResponse(data);
 
-        ArgumentCaptor<WeatherApiResponse> captor = ArgumentCaptor.forClass(WeatherApiResponse.class);
+        ArgumentCaptor<OperationType.WeatherApiResponse> captor = ArgumentCaptor.forClass(OperationType.WeatherApiResponse.class);
         Mockito.verify(weatherApiResponseRepository).save(captor.capture());
-        WeatherApiResponse capturedResponse = captor.getValue();
+        OperationType.WeatherApiResponse capturedResponse = captor.getValue();
 
         assertEquals(city, capturedResponse.getCity());
         assertEquals(countryCode, capturedResponse.getCountryCode());
@@ -160,7 +160,7 @@ class OpenWeatherServiceImplTest {
         when(objectMapper.writeValueAsString(mockWeatherResponse))
                 .thenReturn("{\"name\": \"London\"}");
 
-        // Mockowanie requestJson
+
         when(objectMapper.writeValueAsString(any(Map.class)))
                 .thenReturn("{\"q\": \"London\", \"appid\": \"test-api-key\", \"units\": \"metric\"}");
 
@@ -277,6 +277,4 @@ class OpenWeatherServiceImplTest {
 
         assertEquals("An unknown error occurred while fetching weather data for: " + CITY, exception.getMessage());
     }
-
-
 }

@@ -45,6 +45,4 @@ public class WeatherController {
             @RequestParam String postcode) {
         return accuWeatherService.getLocationByPostalCode(postcode);
     }
-
-
 }
