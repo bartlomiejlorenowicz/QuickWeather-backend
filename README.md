@@ -10,7 +10,6 @@ No manual database or mail configuration is required.
 
 1️⃣ Clone the repository
 git clone https://github.com/bartlomiejlorenowicz/QuickWeather-backend
-cd QuickWeather
 
 2️⃣ Prepare environment variables
 
