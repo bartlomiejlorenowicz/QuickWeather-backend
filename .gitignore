@@ -6,7 +6,7 @@ target/
 
 # Local application config (secrets)
 application.properties
-application-local.properties
+src/main/resources/application-local.properties
 application-dev.properties
 
 # Environment variables
