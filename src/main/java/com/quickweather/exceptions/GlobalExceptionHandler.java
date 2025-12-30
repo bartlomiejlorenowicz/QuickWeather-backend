@@ -116,6 +116,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(AccountLockedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccountLocked(AccountLockedException ex) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Account is locked. Please try again later.");
+        response.put("errorType", "ACCOUNT_LOCKED");
+        response.put("lockUntil", ex.getLockUntil());
+        response.put("timestamp", LocalDateTime.now().toString());
+
+        return ResponseEntity
+                .status(HttpStatus.LOCKED)
+                .body(response);
+    }
+
     private HttpStatus mapErrorTypeToHttpStatus(WeatherErrorType weatherErrorType) {
 
         return switch (weatherErrorType) {

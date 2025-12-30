@@ -1,6 +1,6 @@
 package com.quickweather.dto.apiResponse;
 
-import com.quickweather.service.user.CustomUserDetails;
+import com.quickweather.security.userdatails.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
