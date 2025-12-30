@@ -3,7 +3,7 @@ package com.quickweather.controller;
 import com.quickweather.dto.user.UserSearchHistoryResponse;
 import com.quickweather.dto.weatherDtos.weather.request.Main;
 import com.quickweather.dto.weatherDtos.weather.response.WeatherResponse;
-import com.quickweather.service.user.CustomUserDetails;
+import com.quickweather.security.userdatails.CustomUserDetails;
 import com.quickweather.service.weather.OpenWeatherServiceImpl;
 import com.quickweather.service.weather.UserSearchHistoryService;
 import org.junit.jupiter.api.BeforeEach;

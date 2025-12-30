@@ -65,15 +65,29 @@ class UserLoginAttemptServiceTest {
     void shouldReturnLockingUser() {
         testUser.setFailedAttempts(4);
 
-        when(userRepository.findByEmail("bartek@wp.pl")).thenReturn(Optional.of(testUser));
+        when(userRepository.findByEmail("bartek@wp.pl"))
+                .thenReturn(Optional.of(testUser));
+
+        when(securityEventService.getClientIpAddress())
+                .thenReturn("system");
 
         userLoginAttemptService.incrementFailedAttempts("bartek@wp.pl");
 
         assertEquals(5, testUser.getFailedAttempts());
         assertFalse(testUser.isEnabled());
-        LocalDateTime expected = LocalDateTime.ofInstant(clock.instant(), clock.getZone()).plusMinutes(15);
+
+        LocalDateTime expected =
+                LocalDateTime.ofInstant(clock.instant(), clock.getZone())
+                        .plusMinutes(15);
+
         assertEquals(expected, testUser.getLockUntil());
-        verify(securityEventService).logEvent("bartek@wp.pl", SecurityEventType.MULTIPLE_LOGIN_ATTEMPTS, "system");
+
+        verify(securityEventService).logEvent(
+                "bartek@wp.pl",
+                SecurityEventType.ACCOUNT_LOCKED,
+                "system"
+        );
+
         verify(userRepository).save(testUser);
     }
 

@@ -3,8 +3,10 @@ package com.quickweather.service.user;
 import com.quickweather.domain.user.User;
 import com.quickweather.dto.apiResponse.LoginResponse;
 import com.quickweather.dto.user.login.LoginRequest;
+import com.quickweather.exceptions.AccountLockedException;
 import com.quickweather.repository.UserRepository;
 import com.quickweather.security.JwtUtil;
+import com.quickweather.security.userdatails.CustomUserDetails;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -93,19 +95,21 @@ class UserAuthenticationServiceTest {
     }
 
     @Test
-    void shouldThrowsExceptionWhenAccountLocked() {
+    void shouldThrowExceptionWhenAccountLocked() {
         LoginRequest request = new LoginRequest();
-        request.setEmail("bartek123@wp.pl");
+        request.setEmail(email);
         request.setPassword("Bartek123!");
 
         User user = new User();
-        user.setPassword(email);
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(loginAttemptService.isAccountLocked(user)).thenReturn(true);
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
-                userAuthenticationService.login(request));
-        assertTrue(exception.getMessage().contains("Your account is locked for 15 minutes. Please try again later."));
+        AccountLockedException exception =
+                assertThrows(AccountLockedException.class, () ->
+                        userAuthenticationService.login(request)
+                );
+
+        assertEquals("Account is locked", exception.getMessage());
     }
 
     @Test
