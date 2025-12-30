@@ -1,8 +1,8 @@
 package com.quickweather.schedule;
 
 import com.quickweather.domain.weather.ApiSource;
-import com.quickweather.dto.WeatherApiResponse;
-import com.quickweather.dto.WeatherApiResponseHistory;
+import com.quickweather.dto.apiResponse.WeatherApiResponseHistory;
+import com.quickweather.dto.apiResponse.OperationType;
 import com.quickweather.repository.WeatherApiResponseHistoryRepository;
 import com.quickweather.repository.WeatherApiResponseRepository;
 import org.junit.jupiter.api.Test;
@@ -46,11 +46,11 @@ class WeatherCleanupServiceTest {
         when(clock.getZone()).thenReturn(zoneId);
 
         LocalDateTime now = LocalDateTime.now(clock);
-        WeatherApiResponse oldRecord = new WeatherApiResponse();
+        OperationType.WeatherApiResponse oldRecord = new OperationType.WeatherApiResponse();
         oldRecord.setCity("London");
         oldRecord.setCreatedAt(now.minusHours(6)); // older than 5 hours
 
-        WeatherApiResponse recentRecord = new WeatherApiResponse();
+        OperationType.WeatherApiResponse recentRecord = new OperationType.WeatherApiResponse();
         recentRecord.setCity("Warsaw");
         recentRecord.setCreatedAt(now.minusHours(4)); // younger than 5 hours
 
@@ -80,7 +80,7 @@ class WeatherCleanupServiceTest {
         when(clock.getZone()).thenReturn(zoneId);
 
         LocalDateTime now = LocalDateTime.now(clock);
-        WeatherApiResponse response = new WeatherApiResponse();
+        OperationType.WeatherApiResponse response = new OperationType.WeatherApiResponse();
         response.setCity("New York");
         response.setCountryCode("US");
         response.setApiSource(ApiSource.OPEN_WEATHER);
@@ -88,7 +88,7 @@ class WeatherCleanupServiceTest {
         response.setRequestJson(null);
         response.setCreatedAt(now.minusHours(6));
 
-        List<WeatherApiResponse> mockData = List.of(response);
+        List<OperationType.WeatherApiResponse> mockData = List.of(response);
 
         when(weatherApiResponseRepository.findAllByCreatedAtBefore(any())).thenReturn(mockData);
 

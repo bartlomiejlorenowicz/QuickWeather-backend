@@ -6,7 +6,7 @@ import com.quickweather.domain.user.User;
 import com.quickweather.repository.RoleRepository;
 import com.quickweather.repository.UserRepository;
 import com.quickweather.security.JwtUtil;
-import com.quickweather.service.user.CustomUserDetails;
+import com.quickweather.security.userdatails.CustomUserDetails;
 import com.quickweather.validation.IntegrationTestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

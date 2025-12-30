@@ -1,10 +1,11 @@
 package com.quickweather.service.user;
 
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.user.UserDto;
-import com.quickweather.domain.User;
 import com.quickweather.mapper.UserMapper;
 import com.quickweather.repository.UserRepository;
 import com.quickweather.service.admin.SecurityEventService;
+import com.quickweather.service.email.EmailService;
 import com.quickweather.validation.user.user_creation.UserValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,109 +14,106 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserCreationServiceTest {
 
     @Mock
-    private UserValidator validator;
-
-    @Mock
     private UserRepository userRepository;
 
     @Mock
-    private UserMapper userMapper;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    private EmailService emailService;
 
     @Mock
     private UserRoleService userRoleService;
 
     @Mock
-    private UserNotificationService userNotificationService;
+    private UserValidator validator;
 
     @Mock
     private SecurityEventService securityEventService;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserMapper userMapper;
+
     @InjectMocks
     private UserCreationService userCreationService;
 
-    private UserDto createUserDto(String email, String password) {
+    @Test
+    void shouldSendWelcomeEmailAfterUserCreation() {
+        // given
         UserDto dto = new UserDto();
-        dto.setEmail(email);
-        dto.setPassword(password);
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-        return dto;
-    }
+        dto.setEmail("test@example.com");
+        dto.setFirstName("Test");
 
-    private User createUser(String email, String password) {
         User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
-        return user;
+        user.setEmail(dto.getEmail());
+        user.setFirstName(dto.getFirstName());
+
+        when(userMapper.toEntity(dto)).thenReturn(user);
+        when(passwordEncoder.encode(any())).thenReturn("encoded");
+
+        // when
+        userCreationService.createUser(dto);
+
+        // then
+        verify(emailService).sendWelcomeEmail(
+                "test@example.com",
+                "Test"
+        );
     }
 
     @Test
-    void shouldSaveUserWhenDataIsValid() {
-        UserDto dto = createUserDto("test@example.com", "password");
-        User user = createUser("test@example.com", "oldPassword");
+    void shouldNotCreateUserWhenValidationFails() {
+        // given
+        UserDto dto = new UserDto();
+        doThrow(new RuntimeException("Validation error"))
+                .when(validator).validate(dto);
 
-        doNothing().when(validator).validate(dto);
-        when(userMapper.toEntity(dto)).thenReturn(user);
+        // when / then
+        assertThrows(RuntimeException.class,
+                () -> userCreationService.createUser(dto));
 
-        when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        doAnswer(invocation -> {
-            ((HashSet) invocation.getArgument(0)).add("DEFAULT_ROLE");
-            return null;
-        }).when(userRoleService).assignDefaultUserRole(any());
-
-        doNothing().when(userNotificationService).sendWelcomeEmail(anyString(), anyString());
-        when(securityEventService.getClientIpAddress()).thenReturn("127.0.0.1");
-        doNothing().when(securityEventService).logEvent(anyString(), any(), anyString());
-
-        assertDoesNotThrow(() -> userCreationService.createUser(dto));
-
-        verify(validator).validate(dto);
-        verify(userMapper).toEntity(dto);
-        verify(passwordEncoder).encode("password");
-        verify(userRoleService).assignDefaultUserRole(any());
-        verify(userRepository).save(user);
-        verify(userNotificationService).sendWelcomeEmail("test@example.com", "John");
-        verify(securityEventService).logEvent(eq("test@example.com"), any(), eq("127.0.0.1"));
+        verifyNoInteractions(userRepository);
+        verifyNoInteractions(emailService);
     }
 
     @Test
-    void shouldCreateDefaultRoleWhenUserDtoRolesAreNull() {
-        UserDto dto = createUserDto("test@example.com", "password");
+    void shouldEncodePasswordBeforeSavingUser() {
+        // given
+        UserDto dto = new UserDto();
+        dto.setPassword("plain123");
 
-        dto.setRoles(null);
-        User user = createUser("test@example.com", "oldPassword");
-
-        doNothing().when(validator).validate(dto);
+        User user = new User();
         when(userMapper.toEntity(dto)).thenReturn(user);
-        when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
-        doAnswer(invocation -> {
-            ((HashSet) invocation.getArgument(0)).add("DEFAULT_ROLE");
-            return null;
-        }).when(userRoleService).assignDefaultUserRole(any());
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        doNothing().when(userNotificationService).sendWelcomeEmail(anyString(), anyString());
-        when(securityEventService.getClientIpAddress()).thenReturn("127.0.0.1");
-        doNothing().when(securityEventService).logEvent(anyString(), any(), anyString());
+        when(passwordEncoder.encode("plain123")).thenReturn("ENCODED");
 
-        assertDoesNotThrow(() -> userCreationService.createUser(dto));
+        // when
+        userCreationService.createUser(dto);
 
-        verify(userRoleService).assignDefaultUserRole(any());
-        verify(userRepository).save(user);
-        verify(userNotificationService).sendWelcomeEmail("test@example.com", "John");
+        // then
+        verify(passwordEncoder).encode("plain123");
+        assertEquals("ENCODED", user.getPassword());
+    }
+
+    @Test
+    void shouldAssignDefaultUserRole() {
+        // given
+        UserDto dto = new UserDto();
+        User user = new User();
+        when(userMapper.toEntity(dto)).thenReturn(user);
+
+        // when
+        userCreationService.createUser(dto);
+
+        // then
+        verify(userRoleService).assignDefaultUserRole(anySet());
     }
 }

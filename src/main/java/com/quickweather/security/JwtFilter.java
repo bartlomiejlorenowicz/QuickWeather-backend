@@ -16,23 +16,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-@Slf4j
 @Component
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
-    private static final List<String> PUBLIC_ENDPOINTS = List.of(
-            "/api/v1/user/auth/login",
-            "/api/v1/user/register",
-            "/api/v1/user/auth/reset-password",
-            "/api/v1/user/auth/set-new-password",
-            "/api/v1/user/auth/forgot-password",
-            "/api/v1/weather/forecast",
-            "/api/v1/weather/zipcode",
-            "/api/v1/weather/coordinate",
-            "/api/v1/weather/forecast/daily",
-            "/swagger-ui/**", "/v3/api-docs/**"
+
+    private static final List<String> PUBLIC_PATHS = List.of(
+            "/api/v1/weather",
+            "/api/v1/user/auth",
+            "/swagger-ui",
+            "/v3/api-docs"
     );
 
     public JwtFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
@@ -41,48 +36,52 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        // Pomiń przetwarzanie tokena dla zapytań OPTIONS
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            chain.doFilter(request, response);
-            return;
-        }
+        String path = request.getRequestURI();
 
-        String path = request.getServletPath();
-        // Jeśli endpoint jest publiczny, pomiń weryfikację tokena
-        if (PUBLIC_ENDPOINTS.contains(path)) {
-            chain.doFilter(request, response);
+        if (isPublicPath(path)) {
+            filterChain.doFilter(request, response);
             return;
         }
 
         String token = extractToken(request);
-        log.info("Token from request: {}", token);
 
-        if (token != null && jwtUtil.validateToken(token)) {
+        if (token != null && jwtUtil.validateToken(token)
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
+
             String email = jwtUtil.extractUsername(token);
-            log.info("Extracted email from token: {}", email);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                log.info("Loaded user details: {}", userDetails.getUsername());
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authentication.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                log.info("Authentication set for user: {}", email);
-            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        chain.doFilter(request, response);
+
+        filterChain.doFilter(request, response);
+    }
+
+    private boolean isPublicPath(String path) {
+        return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
     }
 
     private String extractToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        return (header != null && header.startsWith("Bearer ")) ? header.substring(7) : null;
+        return (header != null && header.startsWith("Bearer "))
+                ? header.substring(7)
+                : null;
     }
-
 }
