@@ -25,39 +25,48 @@ public class UserPasswordResetController {
     private final PasswordResetService passwordResetService;
     private final TokenValidationService tokenValidationService;
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse> resetPassword(@Valid @RequestBody EmailRequest emailRequest) {
-        log.info("Reset password requested for: {}", emailRequest.getEmail());
-        passwordResetService.sendPasswordResetEmail(emailRequest.getEmail(), "/dashboard/change-password");
-        ApiResponse apiResponse = ApiResponse.buildApiResponse("Password reset link sent", OperationType.RESET_PASSWORD);
-
-        return ResponseEntity.ok(apiResponse);
-    }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse> forgotPassword(@Valid @RequestBody EmailRequest emailRequest) {
+    public ResponseEntity<ApiResponse> forgotPassword(
+            @Valid @RequestBody EmailRequest emailRequest
+    ) {
         log.info("Forgot password requested for: {}", emailRequest.getEmail());
-        passwordResetService.sendPasswordResetEmail(emailRequest.getEmail(), "/set-forgot-password");
-        ApiResponse apiResponse = ApiResponse.buildApiResponse("Password reset link sent", OperationType.FORGOT_PASSWORD);
 
-        return ResponseEntity.ok(apiResponse);
+        passwordResetService.forgotPassword(emailRequest.getEmail());
+
+        return ResponseEntity.ok(
+                ApiResponse.buildApiResponse(
+                        "Password reset link sent",
+                        OperationType.FORGOT_PASSWORD
+                )
+        );
     }
 
     @PostMapping("/validate-reset-token")
-    public ResponseEntity<ApiResponse> validateResetToken(@Valid @RequestBody TokenRequest tokenRequest) {
-        String token = tokenRequest.getToken();
-        log.info("Validating reset token: '{}'", token);
-        tokenValidationService.validateResetTokenOrThrow(token); // token
-        ApiResponse response = ApiResponse.buildApiResponse("Token is valid", OperationType.VALIDATE_RESET_TOKEN);
+    public ResponseEntity<ApiResponse> validateResetToken(
+            @Valid @RequestBody TokenRequest tokenRequest
+    ) {
+        tokenValidationService.validateResetTokenOrThrow(tokenRequest.getToken());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                ApiResponse.buildApiResponse(
+                        "Token is valid",
+                        OperationType.VALIDATE_RESET_TOKEN
+                )
+        );
     }
 
     @PostMapping("/set-new-password")
-    public ResponseEntity<ApiResponse> setNewPassword(@Valid @RequestBody SetNewPasswordRequest request) {
+    public ResponseEntity<ApiResponse> setNewPassword(
+            @Valid @RequestBody SetNewPasswordRequest request
+    ) {
         passwordResetService.resetPasswordUsingToken(request);
-        ApiResponse apiResponse = ApiResponse.buildApiResponse(
-                "Password updated successfully.", OperationType.SET_NEW_PASSWORD);
-        return ResponseEntity.ok(apiResponse);
+
+        return ResponseEntity.ok(
+                ApiResponse.buildApiResponse(
+                        "Password updated successfully",
+                        OperationType.SET_NEW_PASSWORD
+                )
+        );
     }
 }

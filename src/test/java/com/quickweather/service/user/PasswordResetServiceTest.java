@@ -1,176 +1,148 @@
 package com.quickweather.service.user;
 
-import com.google.api.services.gmail.Gmail;
 import com.quickweather.domain.user.User;
 import com.quickweather.dto.user.user_auth.SetNewPasswordRequest;
-import com.quickweather.exceptions.EmailSendingException;
-import com.quickweather.integration.GmailQuickstart;
 import com.quickweather.repository.UserRepository;
 import com.quickweather.security.JwtUtil;
+import com.quickweather.service.email.EmailService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.UUID;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PasswordResetServiceTest {
 
     @Mock
-    private UserSearchService userSearchService;
+    private UserRepository userRepository;
 
     @Mock
     private JwtUtil jwtUtil;
 
     @Mock
-    private GmailQuickstart gmailQuickstart;
+    private EmailService emailService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @Mock
-    private UserRepository userRepository;
-
     @InjectMocks
     private PasswordResetService passwordResetService;
 
-    private static final String VALID_TOKEN = "validToken";
-    private static final String INVALID_TOKEN = "invalidToken";
-    private static final String EMAIL = "bartek123@wp.pl";
-    private final String frontendBaseUrl = "http://localhost:4200";
+    @Test
+    void shouldThrowUsernameNotFoundExceptionWhenUserNotFoundOnForgotPassword() {
+        String email = "test@wp.pl";
 
-    private SetNewPasswordRequest buildRequest(String token, String newPassword, String confirmPassword) {
-        SetNewPasswordRequest request = new SetNewPasswordRequest();
-        request.setToken(token);
-        request.setNewPassword(newPassword);
-        request.setConfirmPassword(confirmPassword);
-        return request;
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(
+                UsernameNotFoundException.class,
+                () -> passwordResetService.forgotPassword(email)
+        );
     }
 
-    private User buildUser(String email) {
+    @Test
+    void shouldSendForgotPasswordEmailSuccessfully() {
+        String email = "test@wp.pl";
         User user = new User();
-        user.setEmail(EMAIL);
-        return user;
+        user.setEmail(email);
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(jwtUtil.generateResetToken(user)).thenReturn("token123");
+
+        passwordResetService.forgotPassword(email);
+
+        verify(emailService).sendForgotPasswordEmail(
+                eq(email),
+                contains("token123")
+        );
     }
 
     @Test
-    void shouldThrowsResponseStatusExceptionWhenInvalidToken() {
+    void shouldThrowUnauthorizedWhenTokenIsInvalid() {
         SetNewPasswordRequest request = new SetNewPasswordRequest();
-        request.setToken(INVALID_TOKEN);
+        request.setToken("invalid");
 
-        when(jwtUtil.validateResetToken(INVALID_TOKEN)).thenReturn(false);
+        when(jwtUtil.validateResetToken("invalid")).thenReturn(false);
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> passwordResetService.resetPasswordUsingToken(request));
-        assertTrue(exception.getMessage().contains("Invalid or expired token."));
-        assertTrue(exception.getMessage().contains("401"));
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> passwordResetService.resetPasswordUsingToken(request)
+        );
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusCode());
     }
 
     @Test
-    void shouldThrowsResponseStatusExceptionWhenUserNotFound() {
-        SetNewPasswordRequest request = buildRequest(VALID_TOKEN, "Bartek123!", "Bartek123!");
-        request.setToken(VALID_TOKEN);
+    void shouldThrowNotFoundWhenUserNotFound() {
+        SetNewPasswordRequest request = new SetNewPasswordRequest();
+        request.setToken("valid");
 
-        when(jwtUtil.validateResetToken(VALID_TOKEN)).thenReturn(true);
-        when(jwtUtil.extractUsernameFromResetToken(VALID_TOKEN)).thenReturn("user123@wp.pl");
-        when(userSearchService.findByEmail("user123@wp.pl")).thenReturn(null);
+        when(jwtUtil.validateResetToken("valid")).thenReturn(true);
+        when(jwtUtil.extractUsernameFromResetToken("valid")).thenReturn("missing@wp.pl");
+        when(userRepository.findByEmail("missing@wp.pl")).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> passwordResetService.resetPasswordUsingToken(request));
-        assertTrue(exception.getMessage().contains("User not found."));
-        assertTrue(exception.getMessage().contains("404"));
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> passwordResetService.resetPasswordUsingToken(request)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     }
 
     @Test
-    void shouldReturnResponseStatusExceptionWhenNewPasswordAndConfirmPasswordDifferent() {
-        SetNewPasswordRequest request = buildRequest(VALID_TOKEN, "newPassword!", "newPass");
+    void shouldThrowBadRequestWhenPasswordsDoNotMatch() {
+        SetNewPasswordRequest request = new SetNewPasswordRequest();
+        request.setToken("valid");
+        request.setNewPassword("newPass");
+        request.setConfirmPassword("otherPass");
 
-        User user = buildUser(EMAIL);
+        User user = new User();
+        user.setEmail("test@wp.pl");
 
-        when(jwtUtil.validateResetToken(VALID_TOKEN)).thenReturn(true);
-        when(jwtUtil.extractUsernameFromResetToken(VALID_TOKEN)).thenReturn(user.getEmail());
-        when(userSearchService.findByEmail(EMAIL)).thenReturn(user);
+        when(jwtUtil.validateResetToken("valid")).thenReturn(true);
+        when(jwtUtil.extractUsernameFromResetToken("valid")).thenReturn("test@wp.pl");
+        when(userRepository.findByEmail("test@wp.pl")).thenReturn(Optional.of(user));
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> passwordResetService.resetPasswordUsingToken(request));
-        assertTrue(exception.getMessage().contains("Passwords do not match."));
-        assertTrue(exception.getMessage().contains("400"));
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> passwordResetService.resetPasswordUsingToken(request)
+        );
 
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
     }
 
     @Test
-    void shouldReturnSuccessfulWhenResetPasswordUsingToken() {
-        SetNewPasswordRequest request = buildRequest(VALID_TOKEN, "newPass123!", "newPass123!");
+    void shouldResetPasswordSuccessfully() {
+        SetNewPasswordRequest request = new SetNewPasswordRequest();
+        request.setToken("valid");
+        request.setNewPassword("newPass");
+        request.setConfirmPassword("newPass");
 
-        User user = buildUser(EMAIL);
+        User user = new User();
+        user.setEmail("test@wp.pl");
 
-        when(jwtUtil.validateResetToken(VALID_TOKEN)).thenReturn(true);
-        when(jwtUtil.extractUsernameFromResetToken(VALID_TOKEN)).thenReturn(user.getEmail());
-        when(userSearchService.findByEmail(EMAIL)).thenReturn(user);
-        when(passwordEncoder.encode("newPass123!")).thenReturn("encodedNewPass123!");
+        when(jwtUtil.validateResetToken("valid")).thenReturn(true);
+        when(jwtUtil.extractUsernameFromResetToken("valid")).thenReturn("test@wp.pl");
+        when(userRepository.findByEmail("test@wp.pl")).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newPass")).thenReturn("encodedPass");
 
         passwordResetService.resetPasswordUsingToken(request);
 
+        assertEquals("encodedPass", user.getPassword());
         verify(userRepository).save(user);
     }
-
-    //============ tests sendPasswordResetEmail(String email, String resetPath) =========
-
-    @Test
-    void shouldSendPasswordResetEmailWithSuccess() throws Exception {
-
-        String email = EMAIL;
-        String resetPath = "/reset";
-        User user = buildUser(EMAIL);
-        user.setUuid(UUID.randomUUID());
-
-        String token = "dummyToken";
-
-        when(userSearchService.findByEmail(EMAIL)).thenReturn(user);
-        when(jwtUtil.generateResetToken(user)).thenReturn(token);
-
-        ReflectionTestUtils.setField(passwordResetService, "frontendBaseUrl", frontendBaseUrl);
-
-        Gmail gmailService = mock(Gmail.class);
-        when(gmailQuickstart.getGmailService()).thenReturn(gmailService);
-
-        passwordResetService.sendPasswordResetEmail(email, resetPath);
-
-        verify(gmailQuickstart).sendEmail(
-                eq(gmailService),
-                eq(email),
-                eq("Password Reset Request"),
-                argThat(content -> content.contains("Click the link to reset your password:") &&
-                        content.contains("token=" + token))
-        );
-    }
-
-    @Test
-    void shouldThrowsEmailSendingExceptionWhenPasswordResetEmailFailure() throws Exception {
-        String resetPath = "/reset";
-        User user = buildUser(EMAIL);
-
-        String token = "dummyToken";
-
-        when(userSearchService.findByEmail(EMAIL)).thenReturn(user);
-        when(jwtUtil.generateResetToken(user)).thenReturn(token);
-        ReflectionTestUtils.setField(passwordResetService, "frontendBaseUrl", frontendBaseUrl);
-
-        Gmail gmailService = mock(Gmail.class);
-        when(gmailQuickstart.getGmailService()).thenReturn(gmailService);
-
-        doThrow(new RuntimeException("Gmail error"))
-                .when(gmailQuickstart)
-                .sendEmail(any(Gmail.class), anyString(), anyString(), anyString());
-
-        assertThrows(EmailSendingException.class, () ->
-                passwordResetService.sendPasswordResetEmail(EMAIL, resetPath)
-        );
-    }
- }
+}

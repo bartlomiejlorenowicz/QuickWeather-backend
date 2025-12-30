@@ -1,4 +1,4 @@
-package com.quickweather.dto;
+package com.quickweather.dto.apiResponse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.quickweather.domain.weather.ApiSource;

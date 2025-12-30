@@ -1,7 +1,7 @@
 package com.quickweather.schedule;
 
-import com.quickweather.dto.WeatherApiResponse;
-import com.quickweather.dto.WeatherApiResponseHistory;
+import com.quickweather.dto.apiResponse.WeatherApiResponseHistory;
+import com.quickweather.dto.apiResponse.OperationType;
 import com.quickweather.repository.WeatherApiResponseHistoryRepository;
 import com.quickweather.repository.WeatherApiResponseRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class WeatherCleanupService {
     public void archiveOldWeatherData() {
         LocalDateTime expiryTime = LocalDateTime.now(clock).minusHours(5);
 
-        List<WeatherApiResponse> oldData = weatherApiResponseRepository.findAllByCreatedAtBefore(expiryTime);
+        List<OperationType.WeatherApiResponse> oldData = weatherApiResponseRepository.findAllByCreatedAtBefore(expiryTime);
 
         if (oldData == null || oldData.isEmpty()) {
             log.info("No records to archive {}", LocalDateTime.now(clock));
@@ -56,7 +56,7 @@ public class WeatherCleanupService {
         }
     }
 
-    private WeatherApiResponseHistory mapToHistory(WeatherApiResponse record) {
+    private WeatherApiResponseHistory mapToHistory(OperationType.WeatherApiResponse record) {
         WeatherApiResponseHistory history = new WeatherApiResponseHistory();
         history.setCity(record.getCity());
         history.setCountryCode(record.getCountryCode());
