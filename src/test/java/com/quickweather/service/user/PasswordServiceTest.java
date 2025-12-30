@@ -1,6 +1,6 @@
 package com.quickweather.service.user;
 
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.user.user_auth.ChangePasswordRequest;
 import com.quickweather.exceptions.UserChangePasswordValidationException;
 import com.quickweather.exceptions.UserErrorType;

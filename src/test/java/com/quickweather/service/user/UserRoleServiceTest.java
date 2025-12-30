@@ -1,7 +1,7 @@
 package com.quickweather.service.user;
 
-import com.quickweather.domain.Role;
-import com.quickweather.domain.RoleType;
+import com.quickweather.domain.user.Role;
+import com.quickweather.domain.user.RoleType;
 import com.quickweather.repository.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

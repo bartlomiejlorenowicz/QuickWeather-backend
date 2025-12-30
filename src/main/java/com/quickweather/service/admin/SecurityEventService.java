@@ -1,7 +1,7 @@
 package com.quickweather.service.admin;
 
 import com.quickweather.admin.SecurityEventType;
-import com.quickweather.domain.SecurityEvent;
+import com.quickweather.domain.user.SecurityEvent;
 import com.quickweather.repository.SecurityEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

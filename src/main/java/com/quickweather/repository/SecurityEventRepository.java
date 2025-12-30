@@ -1,6 +1,6 @@
 package com.quickweather.repository;
 
-import com.quickweather.domain.SecurityEvent;
+import com.quickweather.domain.user.SecurityEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -3,15 +3,13 @@ package com.quickweather.service.weather;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.quickweather.domain.ApiSource;
-import com.quickweather.domain.WeatherApiResponse;
-import com.quickweather.dto.weatherDtos.weather.WeatherResponseData;
+import com.quickweather.domain.weather.ApiSource;
+import com.quickweather.dto.WeatherApiResponse;
+import com.quickweather.dto.weatherDtos.weather.response.WeatherResponseData;
 import com.quickweather.exceptions.WeatherErrorType;
 import com.quickweather.exceptions.WeatherServiceException;
 import com.quickweather.repository.WeatherApiResponseRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 

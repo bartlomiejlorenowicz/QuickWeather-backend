@@ -1,6 +1,6 @@
 package com.quickweather.repository;
 
-import com.quickweather.domain.EmailTemplate;
+import com.quickweather.domain.user.EmailTemplate;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

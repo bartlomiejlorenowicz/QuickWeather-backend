@@ -1,6 +1,6 @@
 package com.quickweather.service.admin;
 
-import com.quickweather.domain.UserActivityLog;
+import com.quickweather.domain.user.UserActivityLog;
 import com.quickweather.repository.UserActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;

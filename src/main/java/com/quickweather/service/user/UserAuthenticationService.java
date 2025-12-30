@@ -1,6 +1,6 @@
 package com.quickweather.service.user;
 
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.apiResponse.LoginResponse;
 import com.quickweather.dto.user.login.LoginRequest;
 import com.quickweather.repository.UserRepository;

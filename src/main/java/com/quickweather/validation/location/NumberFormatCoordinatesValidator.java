@@ -1,6 +1,6 @@
 package com.quickweather.validation.location;
 
-import com.quickweather.dto.weatherDtos.weather.Coordinates;
+import com.quickweather.dto.weatherDtos.weather.request.Coordinates;
 import com.quickweather.exceptions.WeatherErrorType;
 import com.quickweather.exceptions.WeatherServiceException;
 

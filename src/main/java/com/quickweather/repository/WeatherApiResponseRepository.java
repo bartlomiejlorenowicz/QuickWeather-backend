@@ -1,7 +1,7 @@
 package com.quickweather.repository;
 
-import com.quickweather.domain.ApiSource;
-import com.quickweather.domain.WeatherApiResponse;
+import com.quickweather.domain.weather.ApiSource;
+import com.quickweather.dto.WeatherApiResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

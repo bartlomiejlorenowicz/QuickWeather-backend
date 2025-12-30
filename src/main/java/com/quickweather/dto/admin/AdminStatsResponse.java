@@ -1,5 +1,7 @@
 package com.quickweather.dto.admin;
 
+import com.quickweather.dto.weatherDtos.weather.request.CityLog;
+import com.quickweather.dto.weatherDtos.weather.request.TopWeather;
 import lombok.Getter;
 import lombok.Setter;
 

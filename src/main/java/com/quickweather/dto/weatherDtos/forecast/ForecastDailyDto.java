@@ -1,10 +1,8 @@
 package com.quickweather.dto.weatherDtos.forecast;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.quickweather.dto.weatherDtos.weather.Main;
-import com.quickweather.dto.weatherDtos.weather.Temp;
-import com.quickweather.dto.weatherDtos.weather.Weather;
-import com.quickweather.dto.weatherDtos.weather.Wind;
+import com.quickweather.dto.weatherDtos.weather.request.Main;
+import com.quickweather.dto.weatherDtos.weather.request.Weather;
+import com.quickweather.dto.weatherDtos.weather.request.Wind;
 import lombok.Getter;
 import lombok.Setter;
 

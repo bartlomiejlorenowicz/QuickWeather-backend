@@ -1,7 +1,7 @@
 package com.quickweather.service.user;
 
 import com.google.api.services.gmail.Gmail;
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.user.user_auth.SetNewPasswordRequest;
 import com.quickweather.exceptions.EmailSendingException;
 import com.quickweather.integration.GmailQuickstart;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;

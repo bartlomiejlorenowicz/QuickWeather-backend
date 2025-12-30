@@ -1,6 +1,6 @@
 package com.quickweather.dto.user;
 
-import com.quickweather.domain.Role;
+import com.quickweather.domain.user.Role;
 import lombok.*;
 
 import java.time.LocalDateTime;

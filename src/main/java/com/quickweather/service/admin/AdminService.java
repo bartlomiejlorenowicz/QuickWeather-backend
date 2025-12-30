@@ -1,10 +1,10 @@
 package com.quickweather.service.admin;
 
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.admin.AdminStatsResponse;
 import com.quickweather.dto.admin.AdminUserDTO;
-import com.quickweather.dto.admin.CityLog;
-import com.quickweather.dto.admin.TopWeather;
+import com.quickweather.dto.weatherDtos.weather.request.CityLog;
+import com.quickweather.dto.weatherDtos.weather.request.TopWeather;
 import com.quickweather.dto.user.UserStatusRequest;
 import com.quickweather.exceptions.UserErrorType;
 import com.quickweather.exceptions.UserNotFoundException;

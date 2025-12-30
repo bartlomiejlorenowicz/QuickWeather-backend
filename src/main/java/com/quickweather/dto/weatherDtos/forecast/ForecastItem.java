@@ -1,10 +1,10 @@
 package com.quickweather.dto.weatherDtos.forecast;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.quickweather.dto.weatherDtos.weather.Clouds;
-import com.quickweather.dto.weatherDtos.weather.Main;
-import com.quickweather.dto.weatherDtos.weather.Weather;
-import com.quickweather.dto.weatherDtos.weather.Wind;
+import com.quickweather.dto.weatherDtos.weather.request.Clouds;
+import com.quickweather.dto.weatherDtos.weather.request.Main;
+import com.quickweather.dto.weatherDtos.weather.request.Weather;
+import com.quickweather.dto.weatherDtos.weather.request.Wind;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.quickweather.service.user;
 
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.apiResponse.LoginResponse;
 import com.quickweather.dto.user.login.LoginRequest;
 import com.quickweather.repository.UserRepository;
@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;

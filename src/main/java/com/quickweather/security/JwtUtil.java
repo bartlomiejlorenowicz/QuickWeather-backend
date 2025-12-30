@@ -1,5 +1,6 @@
 package com.quickweather.security;
-import com.quickweather.domain.User;
+
+import com.quickweather.domain.user.User;
 import com.quickweather.service.user.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -112,15 +113,15 @@ public class JwtUtil {
     public String extractResetTokenForType(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(resetTokenKey) // Klucz weryfikujący podpis
+                    .setSigningKey(resetTokenKey)
                     .build()
-                    .parseClaimsJws(token) // Parsowanie tokena
-                    .getBody(); // Pobranie części payload
+                    .parseClaimsJws(token)
+                    .getBody();
 
-            return claims.get("type", String.class); // Wyciągnięcie wartości claim "type"
+            return claims.get("type", String.class);
         } catch (JwtException e) {
             log.error("Invalid token: {}", e.getMessage());
-            return null; // Zwrot null w przypadku błędnego tokena
+            return null;
         }
     }
 

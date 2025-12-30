@@ -1,6 +1,6 @@
 package com.quickweather.service.user;
 
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.exceptions.UserNotFoundException;
 import com.quickweather.exceptions.UserValidationException;
 import com.quickweather.repository.UserRepository;

@@ -1,6 +1,6 @@
 package com.quickweather.dto.user;
 
-import com.quickweather.dto.weatherDtos.weather.WeatherResponse;
+import com.quickweather.dto.weatherDtos.weather.response.WeatherResponse;
 
 import java.time.LocalDateTime;
 

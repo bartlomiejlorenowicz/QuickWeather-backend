@@ -2,9 +2,9 @@ package com.quickweather.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quickweather.dto.user.UserDto;
-import com.quickweather.domain.Role;
-import com.quickweather.domain.RoleType;
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.Role;
+import com.quickweather.domain.user.RoleType;
+import com.quickweather.domain.user.User;
 import com.quickweather.repository.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

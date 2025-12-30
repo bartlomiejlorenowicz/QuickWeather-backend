@@ -1,7 +1,7 @@
 package com.quickweather.schedule;
 
-import com.quickweather.domain.WeatherApiResponse;
-import com.quickweather.domain.WeatherApiResponseHistory;
+import com.quickweather.dto.WeatherApiResponse;
+import com.quickweather.dto.WeatherApiResponseHistory;
 import com.quickweather.repository.WeatherApiResponseHistoryRepository;
 import com.quickweather.repository.WeatherApiResponseRepository;
 import lombok.extern.slf4j.Slf4j;

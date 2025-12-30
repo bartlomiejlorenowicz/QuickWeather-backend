@@ -1,7 +1,7 @@
 package com.quickweather.service.user;
 
 import com.quickweather.admin.SecurityEventType;
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.repository.UserRepository;
 import com.quickweather.service.admin.SecurityEventService;
 import lombok.RequiredArgsConstructor;

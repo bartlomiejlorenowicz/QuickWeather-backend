@@ -1,7 +1,7 @@
 package com.quickweather.service.user;
 
 import com.google.api.services.gmail.Gmail;
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.user.user_auth.SetNewPasswordRequest;
 import com.quickweather.exceptions.EmailSendingException;
 import com.quickweather.integration.GmailQuickstart;

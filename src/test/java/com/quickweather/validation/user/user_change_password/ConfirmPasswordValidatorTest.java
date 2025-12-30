@@ -1,13 +1,12 @@
 package com.quickweather.validation.user.user_change_password;
 
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.user.user_auth.ChangePasswordRequest;
 import com.quickweather.exceptions.UserChangePasswordValidationException;
 import com.quickweather.exceptions.UserErrorType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

@@ -1,9 +1,8 @@
 package com.quickweather.validation.user.user_change_password;
 
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import com.quickweather.dto.user.user_auth.ChangePasswordRequest;
 import com.quickweather.exceptions.UserChangePasswordValidationException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

@@ -1,6 +1,6 @@
 package com.quickweather.security;
 
-import com.quickweather.domain.User;
+import com.quickweather.domain.user.User;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
