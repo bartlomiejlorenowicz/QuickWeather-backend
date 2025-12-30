@@ -25,12 +25,17 @@ public class UserLoginAttemptService {
         updateUserByEmail(email, user -> {
             int attempts = user.getFailedAttempts() + 1;
             user.setFailedAttempts(attempts);
-            if (attempts >= 5) {
+            if (attempts >= 5 && user.isEnabled()) {
                 user.setEnabled(false);
                 user.setLockUntil(LocalDateTime.now(clock).plusMinutes(15));
-                log.info("user exceeded login attempts: {}", email);
-                securityEventService.logEvent(email, SecurityEventType.MULTIPLE_LOGIN_ATTEMPTS, "system");
-                log.info("Incrementing failed attempts for user {}, current attempts={}", email, user.getFailedAttempts());
+
+                log.info("User {} account locked until {}", email, user.getLockUntil());
+
+                securityEventService.logEvent(
+                        email,
+                        SecurityEventType.ACCOUNT_LOCKED,
+                        securityEventService.getClientIpAddress()
+                );
             }
         });
     }

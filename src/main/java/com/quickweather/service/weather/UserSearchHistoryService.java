@@ -2,12 +2,12 @@ package com.quickweather.service.weather;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quickweather.dto.apiResponse.OperationType;
 import com.quickweather.dto.user.UserSearchHistoryResponse;
 import com.quickweather.dto.weatherDtos.weather.response.WeatherResponse;
 import com.quickweather.domain.weather.ApiSource;
 import com.quickweather.domain.user.User;
 import com.quickweather.domain.weather.UserSearchHistory;
-import com.quickweather.dto.WeatherApiResponse;
 import com.quickweather.exceptions.UserErrorType;
 import com.quickweather.exceptions.UserNotFoundException;
 import com.quickweather.repository.UserRepository;
@@ -36,16 +36,13 @@ public class UserSearchHistoryService {
     @Transactional(readOnly = true)
     public List<UserSearchHistoryResponse> getUserSearchHistory(Long userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("searchedAt").descending());
-        // Pobierz historię użytkownika z bazy danych
         Page<UserSearchHistory> history = userSearchHistoryRepository.findByUserId(userId, pageable);
 
-        // Mapuj na `UserSearchHistoryResponse`
         return history.stream().map(h -> {
             UserSearchHistoryResponse response = new UserSearchHistoryResponse();
             response.setCity(h.getCity());
             response.setSearchedAt(h.getSearchedAt());
 
-            // Deserializacja JSON na `WeatherResponse`
             try {
                 WeatherResponse weatherResponse = objectMapper.treeToValue(h.getWeatherApiResponse().getResponseJson(), WeatherResponse.class);
                 response.setWeather(weatherResponse);
@@ -61,12 +58,10 @@ public class UserSearchHistoryService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(UserErrorType.USER_NOT_FOUND, "User not found with id: " + userId));
 
-        // Sprawdzamy, czy odpowiedź pogodowa już istnieje w bazie
-        WeatherApiResponse existingWeatherApiResponse = weatherApiResponseRepository.findByCityAndApiSource(city, ApiSource.OPEN_WEATHER);
+        OperationType.WeatherApiResponse existingWeatherApiResponse = weatherApiResponseRepository.findByCityAndApiSource(city, ApiSource.OPEN_WEATHER);
 
-        // Jeśli nie istnieje, zapisujemy ją w WeatherApiResponse
         if (existingWeatherApiResponse == null) {
-            WeatherApiResponse weatherApiResponse = new WeatherApiResponse();
+            OperationType.WeatherApiResponse weatherApiResponse = new OperationType.WeatherApiResponse();
             weatherApiResponse.setCity(city);
             weatherApiResponse.setApiSource(ApiSource.OPEN_WEATHER);
             weatherApiResponse.setResponseJson(objectMapper.valueToTree(weatherResponse));
@@ -77,7 +72,6 @@ public class UserSearchHistoryService {
             return;
         }
 
-        // Tworzymy i zapisujemy historię wyszukiwań użytkownika
         UserSearchHistory searchHistory = new UserSearchHistory();
         searchHistory.setUser(user);
         searchHistory.setCity(city);
@@ -86,5 +80,4 @@ public class UserSearchHistoryService {
 
         userSearchHistoryRepository.save(searchHistory);
     }
-
 }

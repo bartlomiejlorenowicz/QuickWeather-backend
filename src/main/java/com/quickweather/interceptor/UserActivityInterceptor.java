@@ -1,7 +1,7 @@
 package com.quickweather.interceptor;
 
 import com.quickweather.service.admin.UserActivityService;
-import com.quickweather.service.user.CustomUserDetails;
+import com.quickweather.security.userdatails.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class UserActivityInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userId = "anonymous";
-        String email = "anonymous";
+        String email = "bartek@wp.pl";
 
         if (auth != null && auth.isAuthenticated()) {
             Object principal = auth.getPrincipal();

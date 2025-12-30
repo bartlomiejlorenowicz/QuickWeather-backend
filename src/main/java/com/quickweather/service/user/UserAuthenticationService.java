@@ -3,8 +3,11 @@ package com.quickweather.service.user;
 import com.quickweather.domain.user.User;
 import com.quickweather.dto.apiResponse.LoginResponse;
 import com.quickweather.dto.user.login.LoginRequest;
+import com.quickweather.exceptions.AccountLockedException;
 import com.quickweather.repository.UserRepository;
 import com.quickweather.security.JwtUtil;
+import com.quickweather.security.userdatails.CustomUserDetails;
+import com.quickweather.service.admin.SecurityEventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,6 +30,7 @@ public class UserAuthenticationService {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final UserLoginAttemptService userLoginAttemptService;
+    private final SecurityEventService securityEventService;
 
     public LoginResponse login(LoginRequest loginRequest) {
         validateLoginRequest(loginRequest);
@@ -39,7 +43,7 @@ public class UserAuthenticationService {
 
         User user = userOpt.get();
         if (userLoginAttemptService.isAccountLocked(user)) {
-            throw new ResponseStatusException(HttpStatus.LOCKED, "Your account is locked for 15 minutes. Please try again later.");
+            throw new AccountLockedException(user.getLockUntil());
         }
 
         try {

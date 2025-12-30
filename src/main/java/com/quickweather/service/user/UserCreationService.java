@@ -5,6 +5,7 @@ import com.quickweather.mapper.UserMapper;
 
 import com.quickweather.repository.UserRepository;
 import com.quickweather.service.admin.SecurityEventService;
+import com.quickweather.service.email.EmailService;
 import com.quickweather.validation.user.user_creation.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,35 +24,28 @@ public class UserCreationService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserRoleService userRoleService;
-//    private final UserNotificationService userNotificationService;
+    private final EmailService emailService;
+
     private final SecurityEventService securityEventService;
 
-    /**
-     * Validates and creates a new user, assigns a default role,
-     * saves to the database, and sends a welcome email.
-     *
-     * @param userDto the data for the new user
-     */
     public void createUser(UserDto userDto) {
-        // Validate input data
         validator.validate(userDto);
         log.info("Starting saving user with email: {}", userDto.getEmail());
 
-        // Map DTO to entity & encode password
         var userEntity = userMapper.toEntity(userDto);
         userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        // Assign default role(s)
         userEntity.setRoles(new HashSet<>());
         userRoleService.assignDefaultUserRole(userEntity.getRoles());
 
-        // Save user in database
         log.info("Saving User entity to database: {}", userEntity);
         userRepository.save(userEntity);
         log.info("User is saved with roles: {}", userEntity.getRoles());
 
-        // Send welcome email
-//        userNotificationService.sendWelcomeEmail(userDto.getEmail(), userDto.getFirstName());
+        emailService.sendWelcomeEmail(
+                userEntity.getEmail(),
+                userEntity.getFirstName()
+        );
 
         String ipAddress = securityEventService.getClientIpAddress();
         securityEventService.logEvent(userDto.getEmail(), SecurityEventType.ACCOUNT_CREATED, ipAddress);

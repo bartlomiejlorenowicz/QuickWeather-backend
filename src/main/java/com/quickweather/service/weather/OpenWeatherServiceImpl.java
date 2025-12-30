@@ -3,11 +3,11 @@ package com.quickweather.service.weather;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quickweather.domain.weather.ApiQueryLog;
+import com.quickweather.dto.apiResponse.OperationType;
 import com.quickweather.dto.weatherDtos.airpollution.AirPollutionResponseDto;
 import com.quickweather.dto.weatherDtos.forecast.HourlyForecastResponseDto;
 import com.quickweather.dto.weatherDtos.forecast.WeatherForecastDailyResponseDto;
 import com.quickweather.domain.weather.ApiSource;
-import com.quickweather.dto.WeatherApiResponse;
 import com.quickweather.dto.weatherDtos.weather.request.Coordinates;
 import com.quickweather.dto.weatherDtos.weather.request.SimpleForecastDto;
 import com.quickweather.dto.weatherDtos.weather.response.WeatherByZipCodeResponseDto;
@@ -17,7 +17,7 @@ import com.quickweather.exceptions.WeatherErrorType;
 import com.quickweather.exceptions.WeatherServiceException;
 import com.quickweather.repository.ApiQueryLogRepository;
 import com.quickweather.repository.WeatherApiResponseRepository;
-import com.quickweather.service.user.CustomUserDetails;
+import com.quickweather.security.userdatails.CustomUserDetails;
 import com.quickweather.utils.UriBuilderUtils;
 import com.quickweather.validation.location.CoordinatesValidator;
 import com.quickweather.validation.location.CoordinatesValidatorChain;
@@ -69,8 +69,6 @@ public class OpenWeatherServiceImpl extends WeatherServiceBase implements OpenWe
         this.userSearchHistoryService = userSearchHistoryService;
     }
 
-    // ==================== API Method ====================
-
     @Override
     public WeatherResponse getCurrentWeatherByCity(String city) {
         if (city == null || !CITY_PATTERN.matcher(city.trim()).matches()) {
@@ -79,7 +77,7 @@ public class OpenWeatherServiceImpl extends WeatherServiceBase implements OpenWe
 
         city = normalizedCity(city);
 
-        Optional<WeatherApiResponse> cachedResponse = getCacheWeatherResponse(city, ApiSource.OPEN_WEATHER);
+        Optional<OperationType.WeatherApiResponse> cachedResponse = getCacheWeatherResponse(city, ApiSource.OPEN_WEATHER);
         if (cachedResponse.isPresent()) {
             apiQueryLogRepository.save(new ApiQueryLog(city, LocalDateTime.now()));
             return processCachedResponse(city, cachedResponse.get());
@@ -217,10 +215,8 @@ public class OpenWeatherServiceImpl extends WeatherServiceBase implements OpenWe
         }
     }
 
-    // ==================== Helper Method ====================
-
     public void saveWeatherApiResponse(String city, WeatherResponse weatherResponse) {
-        WeatherApiResponse weatherApiResponse = new WeatherApiResponse();
+        OperationType.WeatherApiResponse weatherApiResponse = new OperationType.WeatherApiResponse();
         weatherApiResponse.setCity(city);
         weatherApiResponse.setApiSource(ApiSource.OPEN_WEATHER);
         weatherApiResponse.setResponseJson(objectMapper.valueToTree(weatherResponse));
@@ -230,7 +226,7 @@ public class OpenWeatherServiceImpl extends WeatherServiceBase implements OpenWe
         weatherApiResponseRepository.save(weatherApiResponse);
     }
 
-    private WeatherResponse processCachedResponse(String city, WeatherApiResponse cachedResponse) {
+    private WeatherResponse processCachedResponse(String city, OperationType.WeatherApiResponse cachedResponse) {
         log.info("Returning cached response for city {}", city);
         try {
             return objectMapper.treeToValue(cachedResponse.getResponseJson(), WeatherResponse.class);
