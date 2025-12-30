@@ -2,6 +2,7 @@ package com.quickweather.service.user;
 
 import com.quickweather.domain.user.User;
 import com.quickweather.repository.UserRepository;
+import com.quickweather.security.userdatails.CustomUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

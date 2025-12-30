@@ -18,15 +18,6 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * Spring Security configuration for the application.
- * <p>
- * - Disables CSRF since we use JWT for security.
- * - Defines public endpoints vs. endpoints that require authentication.
- * - Adds the {@link JwtFilter} to the security filter chain for token validation.
- * <p>
- * This setup enables stateless authentication using JWT.
- */
 @Configuration
 public class SecurityConfig {
 
@@ -38,23 +29,13 @@ public class SecurityConfig {
         this.corsConfigurationSource = corsConfigurationSource;
     }
 
-    /**
-     * The main Security filter chain configuration.
-     *
-     * @param http HttpSecurity object for building web based security.
-     * @return the configured SecurityFilterChain
-     * @throws Exception if configuration fails
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1) Configure CORS explicitly
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
-                // 2) Disable CSRF
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 3) Configure authorization rules
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
@@ -93,29 +74,18 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Defines how to handle unauthorized requests (returns HTTP 401).
-     */
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED);
     }
 
-    /**
-     * Provides a password encoder (BCrypt).
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Exposes the AuthenticationManager as a bean.
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
-
-
 }
