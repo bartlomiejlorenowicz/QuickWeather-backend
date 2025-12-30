@@ -1,4 +1,4 @@
-package com.quickweather.config;
+package com.quickweather.config.security;
 
 import com.quickweather.interceptor.UserActivityInterceptor;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.quickweather.service.user;
+package com.quickweather.security.userdatails;
 
 import com.quickweather.domain.user.User;
 import lombok.AllArgsConstructor;
