@@ -110,8 +110,11 @@ Short demo video presenting the main application features:
 - user search history
 - Swagger API documentation
 
-![QuickWeather Demo](docs/swagger-quickweather.gif)
-![QuickWeather Demo](docs/quickweather-fullstack.gif)
+### Swagger API
+![Swagger Demo](docs/swagger-quickweather.gif)
+
+### Full application flow (Frontend + Backend)
+![QuickWeather Demo](docs/fullstack.gif)
 
 ## 👤 Author
 Bartłomiej Lorenowicz – Junior Java Developer
