@@ -40,3 +40,6 @@ services:
       JWT_RESET_SECRET: dev-reset-secret
 
       OPEN_WEATHER_API_KEY: CHANGE_ME
+
+volumes:
+  postgres_data:
