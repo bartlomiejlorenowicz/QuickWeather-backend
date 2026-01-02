@@ -10,6 +10,7 @@ No manual database or mail configuration is required.
 
 1️⃣ Clone the repository
 git clone https://github.com/bartlomiejlorenowicz/QuickWeather-backend
+cd QuickWeather-backend
 
 2️⃣ Prepare environment variables
 
@@ -30,6 +31,19 @@ This will start:
 PostgreSQL database
 MailHog (local email testing)
 Spring Boot backend application
+
+## 🐳 Docker
+
+The backend application is containerized using Docker.
+
+Build and run backend only (without Docker Compose)
+mvn clean package -DskipTests
+docker build -t quickweather-backend .
+docker run -p 8080:8080 quickweather-backend
+
+The application will be available at:
+http://localhost:8080
+
 
 ## 🚀 Tech Stack
 - Java 21
@@ -91,14 +105,6 @@ The backend and frontend are developed as separate projects, enabling independen
 ### ▶️ Swagger UI
 ```text
 http://localhost:8080/swagger-ui/index.html
-```
-
-## 🐳 Running locally
-
-The application can be run locally using Docker Compose:
-
-```bash
-docker-compose up -d
 ```
 
 ## 🎥 Demo

@@ -28,18 +28,8 @@ services:
       - mailhog
     ports:
       - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/quickweather
-      SPRING_DATASOURCE_USERNAME: quickweather
-      SPRING_DATASOURCE_PASSWORD: quickweather
-
-      SPRING_MAIL_HOST: mailhog
-      SPRING_MAIL_PORT: 1025
-
-      JWT_SECRET: dev-secret
-      JWT_RESET_SECRET: dev-reset-secret
-
-      OPEN_WEATHER_API_KEY: CHANGE_ME
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
