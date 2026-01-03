@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@ActiveProfiles("local")
 class UserCreationControllerTest extends IntegrationTestConfig {
 
     private static final String REGISTER_URL = "/api/v1/user/register";

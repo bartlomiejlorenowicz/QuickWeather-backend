@@ -14,6 +14,7 @@ import com.quickweather.service.admin.AdminService;
 import com.quickweather.service.admin.SecurityEventService;
 import com.quickweather.service.admin.UserActivityService;
 import com.quickweather.service.user.PasswordService;
+import com.quickweather.validation.IntegrationTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,7 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AdminControllerTest {
+@ActiveProfiles("test")
+class AdminControllerTest extends IntegrationTestConfig {
 
     @Autowired
     private MockMvc mockMvc;
