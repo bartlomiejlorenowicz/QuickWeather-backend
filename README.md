@@ -33,6 +33,14 @@ JWT_RESET_SECRET
 ⚠️ Important
 The .env file is not committed to the repository and is required to run the application locally.
 
+The Docker image expects a pre-built JAR file.
+Before running Docker Compose, build the application:
+
+```bash
+
+mvn clean package -DskipTests
+```
+
 3️⃣ Start the application
 ```bash
 
