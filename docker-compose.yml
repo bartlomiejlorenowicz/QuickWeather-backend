@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   postgres:
@@ -12,6 +11,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U quickweather" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mailhog:
     image: mailhog/mailhog

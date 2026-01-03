@@ -1,7 +1,7 @@
 # 🌦️ QuickWeather API
 
 Backend application providing weather data, forecasts, air pollution information
-and user-specific search history, with focus on clean architecture, security and testability.
+and user-specific search history, with a focus on clean architecture, security and testability.
 
 ⚡ Run the project in 3 minutes (Docker)
 
@@ -9,41 +9,65 @@ The easiest way to run the project locally is using Docker Compose.
 No manual database or mail configuration is required.
 
 1️⃣ Clone the repository
+```bash
+
 git clone https://github.com/bartlomiejlorenowicz/QuickWeather-backend
 cd QuickWeather-backend
+```
 
 2️⃣ Prepare environment variables
 
 Create a .env file based on the example:
 cp .env.example .env
 
-Fill in the required values in .env (API keys, JWT secrets).
+Fill in the required values in .env:
 
-⚠️ Important:
-The .env file is not committed to the repository.
-It is required to run the application locally.
+OPEN_WEATHER_API_KEY
+
+ACCUWEATHER_API_KEY
+
+JWT_SECRET
+
+JWT_RESET_SECRET
+
+⚠️ Important
+The .env file is not committed to the repository and is required to run the application locally.
 
 3️⃣ Start the application
-docker-compose up -d
+```bash
 
+docker-compose up --build
+```
 This will start:
 
-PostgreSQL database
-MailHog (local email testing)
-Spring Boot backend application
+🐘 PostgreSQL database
+📬 MailHog is used for local email testing (no real emails are sent).
+☕ Spring Boot backend application
 
-## 🐳 Docker
+4️⃣ Access the application
 
-The backend application is containerized using Docker.
+Backend API:
+👉 http://localhost:8080
 
-Build and run backend only (without Docker Compose)
+Swagger UI (API documentation):
+👉 http://localhost:8080/swagger-ui.html
+
+MailHog UI:
+👉 http://localhost:8025
+
+## 🐳 Docker (backend only)
+
+Build the application
 mvn clean package -DskipTests
+
+Build Docker image
 docker build -t quickweather-backend .
+
+Run the container
 docker run -p 8080:8080 quickweather-backend
 
 The application will be available at:
-http://localhost:8080
-
+👉 http://localhost:8080
 
 ## 🚀 Tech Stack
 - Java 21
@@ -122,6 +146,8 @@ Short demo video presenting the main application features:
 ![QuickWeather Demo](docs/fullstack.gif)
 
 ## 👤 Author
-Bartłomiej Lorenowicz – Junior Java Developer
+Bartłomiej Lorenowicz – Junior Java Developer  
+📍 Poland  
+
 
 
