@@ -1,5 +1,6 @@
 package com.quickweather.validation.user_creation;
 
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.exceptions.UserValidationException;
 import com.quickweather.repository.UserRepository;
@@ -24,38 +25,38 @@ class UserEmailValidatorTest {
 
     @Test
     void givenEmail_WhenEmailOk_thenDoesNotThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .email("first@wp.pl")
                 .build();
 
-        assertDoesNotThrow(() -> userEmailValidator.validate(userDto));
+        assertDoesNotThrow(() -> userEmailValidator.validate(request));
     }
 
     @Test
     void givenEmail_WhenEmailNotOk_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .email("first.pl")
                 .build();
 
-        assertThrows(UserValidationException.class, () -> userEmailValidator.validate(userDto));
+        assertThrows(UserValidationException.class, () -> userEmailValidator.validate(request));
     }
 
     @Test
     void givenEmail_WhenEmailIsNull_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .email(null)
                 .build();
 
-        assertThrows(UserValidationException.class, () -> userEmailValidator.validate(userDto));
+        assertThrows(UserValidationException.class, () -> userEmailValidator.validate(request));
     }
 
     @Test
     void givenEmail_WhenEmailExist_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .email("first@wp.pl")
                 .build();
-        when(userCreationRepository.existsByEmail(userDto.getEmail())).thenReturn(true);
+        when(userCreationRepository.existsByEmail(request.getEmail())).thenReturn(true);
 
-        assertThrows(UserValidationException.class, () -> userEmailValidator.validate(userDto));
+        assertThrows(UserValidationException.class, () -> userEmailValidator.validate(request));
     }
 }

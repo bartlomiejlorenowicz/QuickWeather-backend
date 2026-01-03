@@ -1,5 +1,6 @@
 package com.quickweather.validation.user_creation;
 
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.exceptions.UserValidationException;
 import com.quickweather.validation.user.user_creation.UserFirstNameValidator;
@@ -18,37 +19,38 @@ class UserFirstNameValidatorTest {
 
     @Test
     void validateFirstName_whenFirstNameIsNull_thenReturnException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .firstName(null)
                 .build();
 
-        assertThrows(UserValidationException.class, () -> userFirstNameValidator.validate(userDto));
+        assertThrows(UserValidationException.class,
+                () -> userFirstNameValidator.validate(request));
     }
 
     @Test
     void validateFirstName_whenFirstNameIsOk_thenDoesNotThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .firstName("firstname")
                 .build();
 
-        assertDoesNotThrow(() -> userFirstNameValidator.validate(userDto));
+        assertDoesNotThrow(() -> userFirstNameValidator.validate(request));
     }
 
     @Test
     void validateFirstName_whenFirstNameIsTooShort_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .firstName("f")
                 .build();
 
-        assertThrows(UserValidationException.class, () -> userFirstNameValidator.validate(userDto));
+        assertThrows(UserValidationException.class, () -> userFirstNameValidator.validate(request));
     }
 
     @Test
     void validateFirstName_whenFirstNameIsTooLong_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .firstName("f".repeat(31))
                 .build();
 
-        assertThrows(UserValidationException.class, () -> userFirstNameValidator.validate(userDto));
+        assertThrows(UserValidationException.class, () -> userFirstNameValidator.validate(request));
     }
 }

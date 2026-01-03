@@ -1,6 +1,7 @@
 package com.quickweather.service.user;
 
 import com.quickweather.domain.user.User;
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.mapper.UserMapper;
 import com.quickweather.repository.UserRepository;
@@ -49,19 +50,21 @@ class UserCreationServiceTest {
     @Test
     void shouldSendWelcomeEmailAfterUserCreation() {
         // given
-        UserDto dto = new UserDto();
-        dto.setEmail("test@example.com");
-        dto.setFirstName("Test");
+        RegisterUserRequest request = RegisterUserRequest.builder()
+                .email("test@example.com")
+                .firstName("Test")
+                .password("Password!123")
+                .build();
 
         User user = new User();
-        user.setEmail(dto.getEmail());
-        user.setFirstName(dto.getFirstName());
+        user.setEmail(request.getEmail());
+        user.setFirstName(request.getFirstName());
 
-        when(userMapper.toEntity(dto)).thenReturn(user);
+        when(userMapper.toEntity(request)).thenReturn(user);
         when(passwordEncoder.encode(any())).thenReturn("encoded");
 
         // when
-        userCreationService.createUser(dto);
+        userCreationService.createUser(request);
 
         // then
         verify(emailService).sendWelcomeEmail(
@@ -73,13 +76,16 @@ class UserCreationServiceTest {
     @Test
     void shouldNotCreateUserWhenValidationFails() {
         // given
-        UserDto dto = new UserDto();
+        RegisterUserRequest request = RegisterUserRequest.builder()
+                .email("bad@email")
+                .build();
+
         doThrow(new RuntimeException("Validation error"))
-                .when(validator).validate(dto);
+                .when(validator).validate(request);
 
         // when / then
         assertThrows(RuntimeException.class,
-                () -> userCreationService.createUser(dto));
+                () -> userCreationService.createUser(request));
 
         verifyNoInteractions(userRepository);
         verifyNoInteractions(emailService);
@@ -88,30 +94,41 @@ class UserCreationServiceTest {
     @Test
     void shouldEncodePasswordBeforeSavingUser() {
         // given
-        UserDto dto = new UserDto();
-        dto.setPassword("plain123");
+        RegisterUserRequest request = RegisterUserRequest.builder()
+                .password("plain123!")
+                .email("test@test.com")
+                .firstName("Test")
+                .build();
 
         User user = new User();
-        when(userMapper.toEntity(dto)).thenReturn(user);
-        when(passwordEncoder.encode("plain123")).thenReturn("ENCODED");
+
+        when(userMapper.toEntity(request)).thenReturn(user);
+        when(passwordEncoder.encode("plain123!")).thenReturn("ENCODED");
 
         // when
-        userCreationService.createUser(dto);
+        userCreationService.createUser(request);
 
         // then
-        verify(passwordEncoder).encode("plain123");
+        verify(passwordEncoder).encode("plain123!");
         assertEquals("ENCODED", user.getPassword());
     }
 
     @Test
     void shouldAssignDefaultUserRole() {
         // given
-        UserDto dto = new UserDto();
+        RegisterUserRequest request = RegisterUserRequest.builder()
+                .email("test@test.com")
+                .firstName("Test")
+                .password("Password!123")
+                .build();
+
         User user = new User();
-        when(userMapper.toEntity(dto)).thenReturn(user);
+
+        when(userMapper.toEntity(request)).thenReturn(user);
+        when(passwordEncoder.encode(any())).thenReturn("ENCODED");
 
         // when
-        userCreationService.createUser(dto);
+        userCreationService.createUser(request);
 
         // then
         verify(userRoleService).assignDefaultUserRole(anySet());
