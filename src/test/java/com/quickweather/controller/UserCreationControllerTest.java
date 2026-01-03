@@ -1,6 +1,7 @@
 package com.quickweather.controller;
 
 import com.quickweather.domain.user.Role;
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.domain.user.User;
 import com.quickweather.repository.RoleRepository;
@@ -133,7 +134,7 @@ class UserCreationControllerTest extends IntegrationTestConfig {
 
     @Test
     void shouldFailWhenEmailIsNotInvalid() throws Exception {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .firstName("Andy")
                 .lastName("Murphy")
                 .password("JohnP@ss123!")
@@ -143,12 +144,14 @@ class UserCreationControllerTest extends IntegrationTestConfig {
 
         mockMvc.perform(post(REGISTER_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content()
                         .contentType("application/json"))
-                .andExpect(jsonPath("$.message").value("email is not valid"));
+                .andExpect(jsonPath("$.errors.email")
+                        .value("must be a well-formed email address"));
+
     }
 
     @Test

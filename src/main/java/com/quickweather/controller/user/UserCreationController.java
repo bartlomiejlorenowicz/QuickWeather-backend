@@ -1,7 +1,10 @@
 package com.quickweather.controller.user;
 
-import com.quickweather.dto.user.UserDto;
+import com.quickweather.dto.user.RegisterUserRequest;
+import com.quickweather.dto.user.UserResponse;
+import com.quickweather.mapper.UserMapper;
 import com.quickweather.service.user.UserCreationService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +18,17 @@ public class UserCreationController {
 
     private final UserCreationService userCreationService;
 
-    public UserCreationController(UserCreationService userCreationService) {
+    private final UserMapper userMapper;
+
+    public UserCreationController(UserCreationService userCreationService, UserMapper userMapper) {
         this.userCreationService = userCreationService;
+        this.userMapper = userMapper;
     }
 
     @PostMapping()
-    public ResponseEntity<Void> register(@RequestBody UserDto userDto) {
-        userCreationService.createUser(userDto);
-        log.info("User registered successfully: {}", userDto.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterUserRequest request) {
+        UserResponse response = userCreationService.createUser(request);
+        log.info("User registered successfully: {}", request.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

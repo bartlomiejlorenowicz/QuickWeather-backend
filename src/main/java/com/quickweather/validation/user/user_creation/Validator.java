@@ -1,5 +1,6 @@
 package com.quickweather.validation.user.user_creation;
 
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 
 import static java.util.Objects.isNull;
@@ -16,12 +17,12 @@ public abstract class Validator {
         return first;
     }
 
-    public abstract void validate(UserDto userDto);
+    public abstract void validate(RegisterUserRequest registerUserRequest);
 
-    protected void validateNext(UserDto userDto) {
+    protected void validateNext(RegisterUserRequest registerUserRequest) {
         if (isNull(next)) {
             return;
         }
-        next.validate(userDto);
+        next.validate(registerUserRequest);
     }
 }

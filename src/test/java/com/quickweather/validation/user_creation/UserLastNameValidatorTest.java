@@ -1,5 +1,6 @@
 package com.quickweather.validation.user_creation;
 
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.exceptions.UserValidationException;
 import com.quickweather.validation.user.user_creation.UserLastNameValidator;
@@ -19,37 +20,37 @@ class UserLastNameValidatorTest {
 
     @Test
     void validLastName_whenLastNameIsNull_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .lastName(null)
                 .build();
 
-        Assertions.assertThrows(UserValidationException.class, () -> userLastNameValidator.validate(userDto));
+        Assertions.assertThrows(UserValidationException.class, () -> userLastNameValidator.validate(request));
     }
 
     @Test
     void validLastName_whenLastNameIsTooShort_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .lastName("l")
                 .build();
 
-        Assertions.assertThrows(UserValidationException.class, () -> userLastNameValidator.validate(userDto));
+        Assertions.assertThrows(UserValidationException.class, () -> userLastNameValidator.validate(request));
     }
 
     @Test
     void validLastName_whenLastNameIsTooLong_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .lastName("l".repeat(31))
                 .build();
 
-        Assertions.assertThrows(UserValidationException.class, () -> userLastNameValidator.validate(userDto));
+        Assertions.assertThrows(UserValidationException.class, () -> userLastNameValidator.validate(request));
     }
 
     @Test
     void validLastName_whenLastNameIsOk_thenDoesNotThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .lastName("lastname")
                 .build();
 
-        assertDoesNotThrow(() -> userLastNameValidator.validate(userDto));
+        assertDoesNotThrow(() -> userLastNameValidator.validate(request));
     }
 }

@@ -1,6 +1,6 @@
 package com.quickweather.validation.user.user_creation;
 
-import com.quickweather.dto.user.UserDto;
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,9 +20,9 @@ public class UserValidator {
         );
     }
 
-    public void validate(UserDto userDto) {
-        log.info("Starting validation for user with email: " + userDto.getEmail());
-        validator.validate(userDto);
-        log.info("Validation finished for user with email: " + userDto.getEmail());
+    public void validate(RegisterUserRequest registerRequest) {
+        log.info("Starting validation for user with email: " + registerRequest.getEmail());
+        validator.validate(registerRequest);
+        log.info("Validation finished for user with email: " + registerRequest.getEmail());
     }
 }

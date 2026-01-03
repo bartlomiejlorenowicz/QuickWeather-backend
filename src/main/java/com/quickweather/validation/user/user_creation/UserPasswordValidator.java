@@ -1,5 +1,6 @@
 package com.quickweather.validation.user.user_creation;
 
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.exceptions.UserErrorType;
 import com.quickweather.exceptions.UserValidationException;
@@ -11,9 +12,9 @@ public class UserPasswordValidator extends Validator {
     private static final String PASSWORD_SPECIAL_CHARACTER = ".*[!@#$%^&*(),.?\\\":{}|<>].*";
 
     @Override
-    public void validate(UserDto userDto) {
+    public void validate(RegisterUserRequest registerUserRequest) {
 
-        String password = userDto.getPassword();
+        String password = registerUserRequest.getPassword();
 
         if (isNull(password)) {
             throw new UserValidationException(UserErrorType.INVALID_PASSWORD, "password is null");
@@ -26,6 +27,6 @@ public class UserPasswordValidator extends Validator {
         if (passwordDoesNotHaveSpecialCharacter) {
             throw new UserValidationException(UserErrorType.INVALID_PASSWORD, "password does not contain a special character");
         }
-        validateNext(userDto);
+        validateNext(registerUserRequest);
     }
 }

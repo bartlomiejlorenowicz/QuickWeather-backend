@@ -1,5 +1,6 @@
 package com.quickweather.validation.user_creation;
 
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.exceptions.UserValidationException;
 import com.quickweather.validation.user.user_creation.UserPasswordValidator;
@@ -18,39 +19,39 @@ class UserPasswordValidatorTest {
 
     @Test
     void givenPassword_whenPasswordOk_thenDoesNotThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .password("pass123!")
                 .build();
 
-        assertDoesNotThrow(() -> userPasswordValidator.validate(userDto));
+        assertDoesNotThrow(() -> userPasswordValidator.validate(request));
     }
 
     @Test
     void givenPassword_whenPasswordIsNull_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .password(null)
                 .build();
 
-        assertThrows(UserValidationException.class, () -> userPasswordValidator.validate(userDto));
+        assertThrows(UserValidationException.class, () -> userPasswordValidator.validate(request));
     }
 
     @Test
     void givenPassword_whenPasswordTooShort_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .password("abc")
                 .build();
 
-        UserValidationException exception = assertThrows(UserValidationException.class, () -> userPasswordValidator.validate(userDto));
+        UserValidationException exception = assertThrows(UserValidationException.class, () -> userPasswordValidator.validate(request));
         assertEquals("password must be minimum 8 characters long", exception.getMessage());
     }
 
     @Test
     void givenPassword_whenPasswordWithoutSpecialCharacter_thenThrowException() {
-        UserDto userDto = UserDto.builder()
+        RegisterUserRequest request = RegisterUserRequest.builder()
                 .password("computer123")
                 .build();
 
-        UserValidationException exception = assertThrows(UserValidationException.class, () -> userPasswordValidator.validate(userDto));
+        UserValidationException exception = assertThrows(UserValidationException.class, () -> userPasswordValidator.validate(request));
         assertEquals("password does not contain a special character", exception.getMessage());
     }
 
