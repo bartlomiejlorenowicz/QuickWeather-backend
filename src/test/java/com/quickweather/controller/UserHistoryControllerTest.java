@@ -6,6 +6,7 @@ import com.quickweather.dto.weatherDtos.weather.response.WeatherResponse;
 import com.quickweather.security.userdatails.CustomUserDetails;
 import com.quickweather.service.weather.OpenWeatherServiceImpl;
 import com.quickweather.service.weather.UserSearchHistoryService;
+import com.quickweather.validation.IntegrationTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.Arrays;
@@ -31,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserHistoryControllerTest {
+class UserHistoryControllerTest extends IntegrationTestConfig {
 
     @Autowired
     private MockMvc mockMvc;
