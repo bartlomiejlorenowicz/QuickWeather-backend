@@ -1,5 +1,6 @@
 package com.quickweather.validation.user.user_creation;
 
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.exceptions.UserErrorType;
 import com.quickweather.exceptions.UserValidationException;
@@ -22,8 +23,8 @@ public class UserEmailValidator extends Validator {
     }
 
     @Override
-    public void validate(UserDto userDto) {
-        String email = userDto.getEmail();
+    public void validate(RegisterUserRequest registerUserRequest) {
+        String email = registerUserRequest.getEmail();
 
         if (isNull(email)) {
             throw new UserValidationException(UserErrorType.INVALID_EMAIL, "email is null");
@@ -37,6 +38,6 @@ public class UserEmailValidator extends Validator {
             throw new UserValidationException(UserErrorType.EMAIL_ALREADY_EXISTS, "the given e-mail exists in the database");
         }
 
-        validateNext(userDto);
+        validateNext(registerUserRequest);
     }
 }

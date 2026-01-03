@@ -1,6 +1,7 @@
 package com.quickweather.service.user;
 import com.quickweather.admin.SecurityEventType;
 import com.quickweather.dto.user.UserDto;
+import com.quickweather.dto.user.UserResponse;
 import com.quickweather.mapper.UserMapper;
 
 import com.quickweather.repository.UserRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.quickweather.dto.user.RegisterUserRequest;
 
 import java.util.HashSet;
 
@@ -28,12 +30,12 @@ public class UserCreationService {
 
     private final SecurityEventService securityEventService;
 
-    public void createUser(UserDto userDto) {
-        validator.validate(userDto);
-        log.info("Starting saving user with email: {}", userDto.getEmail());
+    public UserResponse createUser(RegisterUserRequest registerUserRequest) {
+        validator.validate(registerUserRequest);
+        log.info("Starting saving user with email: {}", registerUserRequest.getEmail());
 
-        var userEntity = userMapper.toEntity(userDto);
-        userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        var userEntity = userMapper.toEntity(registerUserRequest);
+        userEntity.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));
 
         userEntity.setRoles(new HashSet<>());
         userRoleService.assignDefaultUserRole(userEntity.getRoles());
@@ -48,6 +50,8 @@ public class UserCreationService {
         );
 
         String ipAddress = securityEventService.getClientIpAddress();
-        securityEventService.logEvent(userDto.getEmail(), SecurityEventType.ACCOUNT_CREATED, ipAddress);
+        securityEventService.logEvent(registerUserRequest.getEmail(), SecurityEventType.ACCOUNT_CREATED, ipAddress);
+
+        return userMapper.toResponse(userEntity);
     }
 }

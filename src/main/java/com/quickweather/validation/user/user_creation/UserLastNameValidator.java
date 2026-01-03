@@ -1,5 +1,6 @@
 package com.quickweather.validation.user.user_creation;
 
+import com.quickweather.dto.user.RegisterUserRequest;
 import com.quickweather.dto.user.UserDto;
 import com.quickweather.exceptions.UserErrorType;
 import com.quickweather.exceptions.UserValidationException;
@@ -9,8 +10,8 @@ import static java.util.Objects.isNull;
 public class UserLastNameValidator extends Validator {
 
     @Override
-    public void validate(UserDto userDto) {
-        String lastName = userDto.getLastName();
+    public void validate(RegisterUserRequest registerUserRequest) {
+        String lastName = registerUserRequest.getLastName();
         if (isNull(lastName)) {
             throw new UserValidationException(UserErrorType.INVALID_LAST_NAME, "lastname i null");
         }
@@ -35,6 +36,6 @@ public class UserLastNameValidator extends Validator {
             throw new UserValidationException(UserErrorType.INVALID_LAST_NAME, "last name contains invalid characters");
         }
 
-        validateNext(userDto);
+        validateNext(registerUserRequest);
     }
 }
