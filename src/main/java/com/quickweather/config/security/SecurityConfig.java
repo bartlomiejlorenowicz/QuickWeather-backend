@@ -39,6 +39,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
+                                "/actuator/health",
+                                "/actuator/info",
                                 "/api/v1/user/auth/login",
                                 "/api/v1/user/register",
                                 "/api/v1/user/auth/validate-reset-token",
@@ -54,6 +56,7 @@ public class SecurityConfig {
                                 "/api/v1/history",
                                 "/swagger-ui/**", "/v3/api-docs/**"
                         ).permitAll()
+                        .requestMatchers("/actuator/**").denyAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/delete-user/**")
                         .hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
