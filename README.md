@@ -77,6 +77,27 @@ docker run -p 8080:8080 quickweather-backend
 The application will be available at:
 👉 http://localhost:8080
 
+## 🩺 Monitoring & Health Checks
+
+The application exposes operational health endpoints using **Spring Boot Actuator**.
+
+Available endpoints:
+- Application health:
+  👉 http://localhost:8080/actuator/health
+- Application info:
+  👉 http://localhost:8080/actuator/info
+
+Only `health` and `info` endpoints are publicly exposed.
+All other Actuator endpoints are secured for safety reasons.
+
+The backend container uses the Actuator health endpoint
+as a **Docker health check**, ensuring the application is fully ready
+before being marked as healthy.
+
+This setup makes the application ready for:
+- Docker-based monitoring
+- future Kubernetes readiness/liveness probes
+
 ## 🚀 Tech Stack
 - Java 21
 - Spring Boot 3
